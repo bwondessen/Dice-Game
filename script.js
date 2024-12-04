@@ -117,3 +117,26 @@ rulesBtn.addEventListener("click", () => {
         rulesContainer.style.display = "none";
     }
 });
+
+keepScoreBtn.addEventListener("click", () => {
+    let value;
+    let id;
+
+    for (const input of scoreInputs) {
+        if (input.checked) {
+            value = input.value;
+            id = input.id;
+            break;
+        }
+    }
+
+    if (value) {
+        rolls = 0;
+        round++;
+        updateStats();
+        resetRadioOptions();
+        updateScore(value, id);
+    } else {
+        alert("Select a score");
+    }
+});
