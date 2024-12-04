@@ -22,7 +22,7 @@ const rollDice = () => {
     for (let i = 0; i < 5; i++) {
         const randomDice = Math.floor(Math.random() * 6) + 1;
         diceValuesArr.push(randomDice);
-    };
+    }
 
     listOfAllDice.forEach((dice, index) => {
         dice.textContent = diceValuesArr[index];
@@ -87,21 +87,42 @@ const detectFullHouse = (arr) => {
     const counts = {};
 
     for (const num of arr) {
-        if (counts[num]) {
-            counts[num]++;
-        } else {
-            counts[num] = 1;
-        }
+        counts[num] = counts[num] ? counts[num] + 1 : 1;
     }
 
-    const values = Object.values(counts);
+    const hasThreeOfAKind = Object.values(counts).includes(3);
+    const hasPair = Object.values(counts).includes(2);
 
-    if (values.includes(3) && values.includes(2)) {
+    if (hasThreeOfAKind && hasPair) {
         updateRadioOption(2, 25);
     }
 
     updateRadioOption(5, 0);
-}
+};
+
+const checkForStraights = (arr) => {
+    const uniqueSorted = [...new Set(arr)].sort((a, b) => a - b);
+
+    if (uniqueSorted.length === 5 && uniqueSorted[4] - uniqueSorted[0] === 4) {
+        updateRadioOption(3, 30);  
+        updateRadioOption(4, 40); 
+    } else if (uniqueSorted.length >= 4) {
+        const smallStraightSequences = [
+            [1, 2, 3, 4],
+            [2, 3, 4, 5],
+            [3, 4, 5, 6]
+        ];
+
+        for (let seq of smallStraightSequences) {
+            if (seq.every(val => uniqueSorted.includes(val))) {
+                updateRadioOption(3, 30); 
+                break;
+            }
+        }
+    } else {
+        updateRadioOption(5, 0); 
+    }
+};
 
 const resetRadioOptions = () => {
     scoreInputs.forEach((input) => {
@@ -143,6 +164,7 @@ rollDiceBtn.addEventListener("click", () => {
         updateStats();
         getHighestDuplicates(diceValuesArr);
         detectFullHouse(diceValuesArr);
+        checkForStraights(diceValuesArr);  // Call checkForStraights after rolling
     }
 });
 
